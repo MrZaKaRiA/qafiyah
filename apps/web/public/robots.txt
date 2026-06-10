@@ -1,4 +1,4 @@
-User-Agent: *
-Allow: /
+User-agent: Yandex
+Disallow: /
 
 Sitemap: https://qafiyah.com/sitemap-index.xml

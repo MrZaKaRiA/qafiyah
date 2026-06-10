@@ -29,6 +29,23 @@ const PARALLEL: Task[] = [
 
 const formatMs = (ms: number) => `${(ms / 1000).toFixed(1)}s`;
 
+// @NOTE: smoke → `bun run dev` → dev.sh → `docker compose up -d --wait`; fail fast here
+// instead of letting the smoke test's 120s startup poll time out when Docker is down.
+async function ensureDockerRunning(): Promise<void> {
+  process.stdout.write('▶ docker... ');
+  try {
+    const proc = Bun.spawn(['docker', 'info'], { cwd: ROOT, stdout: 'ignore', stderr: 'ignore' });
+    if ((await proc.exited) === 0) {
+      console.log('✓');
+      return;
+    }
+  } catch {
+    // docker binary missing
+  }
+  console.error('\n✗ docker is not running — start Docker (OrbStack/Docker Desktop) and retry');
+  process.exit(1);
+}
+
 type Result = { name: string; code: number; output: string; ms: number };
 
 async function runSequential(tasks: Task[]): Promise<void> {
@@ -105,7 +122,9 @@ async function runParallel(tasks: Task[]): Promise<void> {
 }
 
 const totalStart = Date.now();
-console.log('── sequential (file-mutating) ──');
+console.log('── preflight ──');
+await ensureDockerRunning();
+console.log('\n── sequential (file-mutating) ──');
 await runSequential(SEQUENTIAL);
 console.log('\n── parallel ──');
 await runParallel(PARALLEL);

@@ -28,7 +28,7 @@
 
 ## About
 
-Qafiyah is an open-source corpus of classical Arabic poetry spanning the major historical eras. It offers full-text Arabic search (Elasticsearch, diacritics normalization); faceted browsing by era, meter, rhyme letter, theme, and collection; a public REST API (Bun + Hono, Docker) with auto-generated OpenAPI docs; and downloadable PostgreSQL dumps. An X/Twitter bot posts a random poem four times daily. Built for readers, researchers, and developers working with classical Arabic literature.
+Qafiyah is an open-source corpus of classical Arabic poetry spanning the major historical eras. It offers full-text Arabic search (Elasticsearch); faceted browsing by era, meter, rhyme letter, theme, and collection; a public REST API with auto-generated OpenAPI docs; and downloadable PostgreSQL dumps. An X bot posts a random poems daily. Built for readers, researchers, and developers working with classical Arabic literature.
 
 ## Try it
 
