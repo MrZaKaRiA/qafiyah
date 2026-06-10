@@ -2,16 +2,11 @@ import { describe, expect, it } from 'vitest';
 import type { SearchClient } from './client';
 import { searchPoems } from './search';
 
-// The ES client is the network boundary; stubbing client.search lets us assert the
-// _source -> PoemHit mapping in isolation, without a live cluster.
 function clientReturning(response: unknown): SearchClient {
   return { search: async () => response } as unknown as SearchClient;
 }
 
 describe('searchPoems mapping', () => {
-  // Regression: meter.slug was hardcoded to '' in the mapper, which fails the
-  // contract's meterSlugSchema (lowercase-letters regex) -> every poem hit 500'd
-  // on output validation. It must be read from _source.meterSlug like era/poet.
   it('maps meter.slug from _source instead of emitting an empty string', async () => {
     const client = clientReturning({
       hits: {

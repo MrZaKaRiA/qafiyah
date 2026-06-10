@@ -23,7 +23,6 @@ const rawQuery = sanitizeArabicInput(Astro.url.searchParams.get('q') ?? '')
 
 const eras = await allEras();
 const activeEra = rawEra ? eras.find((era) => era.slug === rawEra) : undefined;
-// A non-empty era that matches no known era is a bad URL → 404.
 if (rawEra && !activeEra) return Astro.rewrite('/404');
 
 const eraFilter = activeEra?.slug as EraSlug | undefined;
@@ -185,10 +184,6 @@ const items = poets.map((poet) => ({
   import { WHITESPACE_RUN_REGEX } from '@qafiyah/constants';
   import { sanitizeArabicInput } from '@qafiyah/contracts';
 
-  // Progressive enhancement: strip non-Arabic as the user types and show the
-  // "Arabic only" hint while we do (matching the home-page search). The server
-  // sanitizes too (sanitizeArabicInput runs in this page's server code), so
-  // search still works with JS disabled.
   const input = document.querySelector('form[role="search"] input[name="q"]');
   const error = document.getElementById('poets-search-error');
   if (input instanceof HTMLInputElement && error) {
@@ -196,7 +191,6 @@ const items = poets.map((poet) => ({
       const raw = input.value;
       const cleaned = sanitizeArabicInput(raw);
       if (cleaned !== raw) input.value = cleaned;
-      // Whitespace-only differences are benign; flag only stripped non-Arabic.
       error.hidden = raw.replace(WHITESPACE_RUN_REGEX, ' ') === cleaned;
     });
   }

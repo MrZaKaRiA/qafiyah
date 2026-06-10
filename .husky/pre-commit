@@ -1,5 +1,12 @@
 #!/usr/bin/env sh
 set -e
 
+# Block direct commits on main; work on a branch and open a PR instead.
+branch="$(git rev-parse --abbrev-ref HEAD)"
+if [ "$branch" = "main" ]; then
+  echo "✗ Direct commits to 'main' are blocked. Create a branch and open a PR."
+  exit 1
+fi
+
 echo "Running all checks..."
 bun run ci

@@ -52,7 +52,6 @@ function TypesToggle({
     const next = selected.includes(value)
       ? selected.filter((v) => v !== value)
       : [...selected, value];
-    // keep at least one type active
     if (next.length === 0) return;
     onChange([...next]);
   };

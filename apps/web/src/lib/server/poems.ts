@@ -25,9 +25,6 @@ export type PoemFilters = {
 
 type PoemsListOutput = ApiOutputs['poems']['list'];
 
-// The API returns 404 for a missing or malformed poem slug; that is the only
-// "no renderable poem" case → null → 404. Genuine errors (500, transport
-// failure) rethrow → 500.
 export const getPoem = (slug: PoemSlug): Promise<Poem | null> =>
   getOrNull(apiServer.poems.get({ slug }));
 

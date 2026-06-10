@@ -29,8 +29,6 @@ Examples:
   bun run deps:doctor --write --verify      # bump, then types + test
 `;
 
-// ──────────────────────────── types ────────────────────────────
-
 type Kind = 'dep' | 'dev';
 type Spec = {
   readonly workspace: string;
@@ -57,8 +55,6 @@ type OutdatedRow = {
   workspace: string;
   isGated: boolean; // held by --minimum-release-age
 };
-
-// ──────────────────────────── pkg discovery ────────────────────────────
 
 type ReadPkgError =
   | { readonly kind: 'missing'; readonly path: string }
@@ -111,9 +107,7 @@ function findWorkspacePkgs(): Pkg[] {
         console.error(`[doctor] malformed ${e.path}: ${e.message}`);
         process.exit(2);
       })
-      .with({ kind: 'missing' }, () => {
-        // missing root package.json silently tolerated, matches prior behavior
-      })
+      .with({ kind: 'missing' }, () => undefined)
       .exhaustive();
   }
   for (const parent of ['apps', 'packages'] as const) {
@@ -135,9 +129,7 @@ function findWorkspacePkgs(): Pkg[] {
             console.error(`[doctor] malformed ${e.path}: ${e.message}`);
             process.exit(2);
           })
-          .with({ kind: 'missing' }, () => {
-            // missing child package.json silently tolerated, matches prior behavior
-          })
+          .with({ kind: 'missing' }, () => undefined)
           .exhaustive();
       }
     }
@@ -198,12 +190,6 @@ function reportOverrides(): void {
 const VERSION_PREFIX_RE = /^([\^~]?)(.*)$/;
 const TRAILING_STAR_RE = /\s*\*$/;
 
-// ──────────────────────────── drift ────────────────────────────
-
-// Pick the spec with the highest version. Prefix (`^`, `~`, or none) follows
-// the majority across occurrences, with `^` as tie-breaker.
-//   ['6.0.3', '^6', '^6.0.3', '^6']  →  '^6.0.3'
-//   ['^4.1.5', '^4.1.5', '^4.1.6']   →  '^4.1.6'
 function pickCanonical(occurrences: readonly Spec[]): string {
   const parseVersionSpec = (
     spec: string | undefined
@@ -326,17 +312,11 @@ function fixDrift(entries: readonly Drift[]): number {
   return changed;
 }
 
-// ──────────────────────────── bun outdated/update ────────────────────────────
-
-// Bun's `outdated` draws box rows with U+2502 `│`. Parse them properly so we
-// can distinguish real outdated packages from ones held by minimum-release-age
-// (those rows show ` *` after the Update/Latest versions).
 function parseOutdatedRows(text: string): OutdatedRow[] {
   const rows: OutdatedRow[] = [];
   for (const line of text.split('\n')) {
     if (!line.startsWith('│')) continue;
     const cells = line.split('│').map((s) => s.trim());
-    // Expect: ['', name, current, update, latest, workspace, '']
     if (cells.length < 6) continue;
     const [, name, current, update, latest, workspace] = cells as [
       string,
@@ -381,7 +361,6 @@ async function runOutdated(): Promise<{
   return { rows, real, gated };
 }
 
-// Bun prints `↑ name old → new` per actual bump.
 const UPDATE_LINE = /^↑\s/gm;
 
 async function runUpdateAt(
@@ -393,7 +372,6 @@ async function runUpdateAt(
   if (interactive) args.push('--interactive');
 
   if (interactive) {
-    // Bun's TUI needs a real terminal; we can't pipe stdout.
     const code = await Bun.spawn(args, {
       cwd,
       stdout: 'inherit',
@@ -439,8 +417,6 @@ async function runVerify(): Promise<number> {
   }
   return 0;
 }
-
-// ──────────────────────────── main ────────────────────────────
 
 const parsed = parseArgs({
   args: Bun.argv.slice(2),
@@ -511,8 +487,6 @@ if (flags.write) {
   totalBumps += root.bumps;
   counted = root.counted;
 
-  // `bun update --latest --recursive` doesn't always drill into workspace
-  // children. If anything is still really outdated, retry per-workspace.
   if (!flags.interactive) {
     const after = await runOutdated();
     if (after.real.length > 0) {
@@ -535,8 +509,6 @@ if (anyMutation && flags.verify) {
   const code = await runVerify();
   if (code !== 0) process.exit(code);
 }
-
-// ──────────────────────────── final summary ────────────────────────────
 
 console.log('');
 if (flags.write) {

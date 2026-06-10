@@ -4,7 +4,6 @@ vi.spyOn(console, 'log').mockImplementation(() => undefined);
 vi.spyOn(console, 'warn').mockImplementation(() => undefined);
 vi.spyOn(console, 'error').mockImplementation(() => undefined);
 
-// Pre-seed so env.ts validates cleanly at module import time.
 process.env['TWITTER_APP_KEY'] = 'test_key';
 process.env['TWITTER_APP_SECRET'] = 'test_secret';
 process.env['TWITTER_ACCESS_TOKEN'] = 'test_token';

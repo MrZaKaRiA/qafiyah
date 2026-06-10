@@ -1,7 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
 
-// The builders are pure; we only mock the client so importing the accessor
-// modules doesn't boot the env layer.
 vi.mock('./server/client', () => ({ apiServer: {} }));
 
 import {

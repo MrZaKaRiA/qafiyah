@@ -3,11 +3,6 @@ import { type Bindings, parseBindings } from './env';
 
 const DEFAULT_PORT = 8787;
 
-/**
- * Builds the Bun.serve `fetch` handler. Injects validated env as Hono's
- * `c.env` — the same contract Cloudflare's runtime and the API tests use
- * (`app.fetch(request, env)`), so app + middleware code stays unchanged.
- */
 export function createFetchHandler(env: Bindings) {
   return (request: Request): Response | Promise<Response> => app.fetch(request, env);
 }
@@ -25,6 +20,4 @@ function boot(): { port: number; fetch: ReturnType<typeof createFetchHandler> } 
   };
 }
 
-// Bun starts a server from the default export only when this is the entry
-// module. Importing it in tests (import.meta.main === false) is side-effect free.
 export default import.meta.main ? boot() : null;

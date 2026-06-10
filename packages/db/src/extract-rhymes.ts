@@ -53,11 +53,8 @@ export function extractRhymeLetter(content: string): string | null {
   }
   if (finals.length === 0) return null;
 
-  // Two-line poem (single ajuz): accept its letter as the rhyme.
   if (ajuz.length === 1) return finals[0] ?? null;
 
-  // Longer poems: first letter that repeats wins; otherwise fall back to
-  // the first ajuz letter so non-strictly-rhymed poems are still indexed.
   const seen = new Set<string>();
   for (const c of finals) {
     if (seen.has(c)) return c;

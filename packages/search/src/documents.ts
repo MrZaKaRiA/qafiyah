@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto';
 
-// U+0610–U+061A (small signs), U+064B–U+065F (combining marks), U+06D6–U+06ED (Quran marks), U+0640 tatweel.
-// NOTE: use explicit \u escapes — literal Arabic ranges are parsed inconsistently by Bun's regex engine.
+// @WARN: under Bun's regex engine, literal Arabic ranges parse inconsistently; switch to explicit \u escapes if matching ever drifts.
+// Ranges: U+0610–U+061A (small signs), U+064B–U+065F (combining marks), U+06D6–U+06ED (Quran marks), U+0640 tatweel.
 const TASHKEEL_REGEX = /[ؐ-ًؚ-ٟۖ-ۭـ]/g;
 
 function stripTashkeel(text: string): string {
@@ -94,7 +94,6 @@ export function toPoetDoc(src: PoetSource): PoetDoc {
   return { ...doc, hash: docHash(doc) };
 }
 
-// Stable content hash for reconciliation; excludes any pre-existing `hash`.
 export function docHash(doc: Record<string, unknown>): string {
   const { hash: _ignore, ...rest } = doc as { hash?: string } & Record<string, unknown>;
   const stable = JSON.stringify(rest, Object.keys(rest).sort());

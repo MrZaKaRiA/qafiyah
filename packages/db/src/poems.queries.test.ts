@@ -46,7 +46,6 @@ describe('parsePoemContent', () => {
   });
 
   it('uses empty string fallback when first half of a pair is empty', () => {
-    // Content starting with '*' → lines[0] = '' (falsy) → '' fallback used for first half
     const { verses } = parsePoemContent('*ب');
     expect(verses).toEqual([['', 'ب']]);
   });
@@ -339,7 +338,7 @@ describe('listPoems (integration)', () => {
     });
   });
 
-  it('returns an empty page (total 0) for an unknown slug — NOT a not_found error', async () => {
+  it('returns an empty page (total 0) for an unknown slug, NOT a not_found error', async () => {
     await withTestDb(async (db) => {
       const result = await listPoems(
         db,

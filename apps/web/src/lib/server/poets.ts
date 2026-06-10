@@ -19,7 +19,6 @@ export async function getPoetsPage(
     })
   );
   if (error) throw error;
-  // A page past the last page is an empty page, not a missing resource → null → /404.
   if (page > Math.max(1, data.pagination.totalPages)) return null;
   return { poets: data.data, pagination: data.pagination };
 }

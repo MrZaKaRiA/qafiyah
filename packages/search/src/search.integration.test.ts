@@ -7,8 +7,6 @@ import { POEMS_INDEX_BODY, POETS_INDEX_BODY } from './indices';
 import { searchPoems, searchPoets } from './search';
 import { ES_TEST_URL, RUN_ES_INTEGRATION } from './test-utils';
 
-// ES 8.x defaults destructive_requires_name=true which blocks wildcard deletes.
-// We toggle it off transiently for setup/teardown only.
 async function deleteTestIndices(c: SearchClient) {
   await c.cluster.putSettings({
     transient: { 'action.destructive_requires_name': false },

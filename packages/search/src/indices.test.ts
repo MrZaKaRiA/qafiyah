@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { POEMS_INDEX_BODY, POETS_INDEX_BODY } from './indices';
 
 describe('index bodies', () => {
-  it('use strict (explicit) mappings — no dynamic mapping', () => {
+  it('use strict (explicit) mappings, no dynamic mapping', () => {
     expect(POEMS_INDEX_BODY.mappings.dynamic).toBe('strict');
     expect(POETS_INDEX_BODY.mappings.dynamic).toBe('strict');
   });

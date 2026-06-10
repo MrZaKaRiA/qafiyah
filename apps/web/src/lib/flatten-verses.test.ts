@@ -51,14 +51,12 @@ describe('flattenVerses', () => {
   });
 
   it('actually truncates result string when accumulated result exceeds limit', () => {
-    // nextLen = 149 + 149 + 2 = 300 (passes the break check), but actual = 149 + 3 + 149 = 301
     const half = 'ب'.repeat(149);
     const result = flattenVerses([[half, half]]);
     expect(result.length).toBe(300);
   });
 
   it('handles null/undefined verse element defensively', () => {
-    // test-only: simulate null verse element from untyped JS callers
     const verses = [null] as unknown as readonly (readonly [string, string])[];
     const result = flattenVerses(verses);
     expect(result).toBe('');

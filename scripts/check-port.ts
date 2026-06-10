@@ -20,15 +20,11 @@ type ProbeError = {
 
 function probe(host: string): Result<'busy' | 'free', ProbeError> {
   try {
-    // Bun.listen requires at least one of `data` or `drain` on `socket`. The
-    // listener is stopped immediately, so the handler is never invoked.
     Bun.listen({
       hostname: host,
       port,
       socket: {
-        data() {
-          /* unused: listener is stopped synchronously */
-        },
+        data: () => undefined,
       },
     }).stop(true);
     return ok('free');
@@ -53,8 +49,6 @@ function probe(host: string): Result<'busy' | 'free', ProbeError> {
 for (const host of ['127.0.0.1', '::1'] as const) {
   const result = probe(host);
   if (result.isErr()) {
-    // ::1 binding can fail benignly on hosts with IPv6 disabled; warn and continue.
-    // Other hosts: surface the error but don't block dev.
     console.warn(
       `[predev] note: could not probe ${host}:${port}: ${result.error.message}${result.error.code ? ` (${result.error.code})` : ''}; treating as free`
     );

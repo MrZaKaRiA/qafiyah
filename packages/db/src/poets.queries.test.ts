@@ -74,7 +74,6 @@ describe('listPoets name filter (integration)', () => {
   it('matches a poet name after folding diacritics and alef/ya/ta-marbuta', async () => {
     await withTestDb(async (db) => {
       const poet = (await getPoetBySlug(db, asPoetSlug('alasha')))._unsafeUnwrap();
-      // Fully fold the real stored name exactly as the SQL does, then search it.
       const folded = poet.name
         .replace(/[ً-ْٰـ]/g, '')
         .replace(/[أإآٱ]/g, 'ا')

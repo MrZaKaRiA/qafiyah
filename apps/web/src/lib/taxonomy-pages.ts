@@ -35,12 +35,6 @@ type LayoutView = {
   readonly jsonLd: readonly JsonLd[];
 };
 
-// -- Per-section copy -------------------------------------------------------
-// The Arabic phrasing is genuinely irregular across sections (e.g. "على بحر"
-// vs "من غرض"), so each section supplies its own string builders rather than a
-// derived template. This is the lookup table that replaces four near-identical
-// page files.
-
 type TermPageConfig = {
   readonly get: (slug: string) => Promise<TermData | null>;
   readonly makeFilters: (slug: string) => PoemFilters;
@@ -149,7 +143,7 @@ const INDEX_PAGE_CONFIG: Record<TaxonomySection, IndexPageConfig> = {
       `قصائد على قافية ${name} - ${poemsCountAr} قصيدة`,
     crumbLabel: 'القوافي',
     heading: (countAr) => `جميع القوافي (${countAr} حرف)`,
-    // @NOTE: no space after "و" here, unlike meters — preserved from the
+    // @NOTE: no space after "و" here, unlike meters; preserved from the
     // originals; normalize both in one place if the inconsistency matters.
     subtitle: (term) =>
       `${toArabicDigits(term.poetsCount ?? 0)} شاعر و${toArabicDigits(term.poemsCount)} قصيدة`,
@@ -182,15 +176,12 @@ const INDEX_PAGE_CONFIG: Record<TaxonomySection, IndexPageConfig> = {
   },
 };
 
-// -- Term page (poems under one taxonomy term) ------------------------------
-
 export type TaxonomyTermLoad = {
   readonly term: TermData;
   readonly poems: readonly PoemRow[];
   readonly pagination: { readonly page: number; readonly totalPages: number };
 };
 
-/** Fetch the term and its page of poems. Null = nothing to render (→ /404). */
 export async function loadTaxonomyTerm(
   section: TaxonomySection,
   slug: string,
@@ -264,9 +255,6 @@ export function buildTaxonomyTermView(section: TaxonomySection, load: TaxonomyTe
   };
 }
 
-// -- Index page (the list of terms) -----------------------------------------
-
-/** Fetch (and optionally filter) all terms for a section's index page. */
 export async function loadTaxonomyIndex(
   section: TaxonomySection
 ): Promise<readonly IndexTermData[]> {

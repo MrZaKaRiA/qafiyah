@@ -11,9 +11,6 @@ export const rawPoemRowSchema = v.object({
   meter_slug: meterSlugSchema,
 });
 
-// Types intentionally inferred at use sites via v.InferOutput<typeof ...Schema>;
-// keeping them un-exported avoids unused-export churn.
-
 export type PoemListRow = {
   readonly title: string;
   readonly slug: PoemSlug;

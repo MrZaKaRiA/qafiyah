@@ -2,12 +2,6 @@
 
 // biome-ignore-all lint/suspicious/noConsole: verifier logs progress to the developer.
 
-/**
- * Validates SEO invariants by fetching a representative URL per route template
- * from a running server (one URL per template proves the template). Set BASE_URL
- * and the sample slugs via env. Exits non-zero on any missing/invalid metadata.
- */
-
 import { Result } from 'neverthrow';
 
 const safeParseJson = Result.fromThrowable(

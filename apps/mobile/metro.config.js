@@ -1,4 +1,4 @@
-// Monorepo Metro config — https://docs.expo.dev/guides/monorepos/
+// Monorepo Metro config: https://docs.expo.dev/guides/monorepos/
 const { getDefaultConfig } = require('expo/metro-config');
 const path = require('node:path');
 

@@ -1,14 +1,9 @@
 import { ANALYSIS } from './analysis';
 
-// text analyzed as normalized, with an exact keyword sub-field and a stemmed
-// sub-field — boosted exact > normalized > stemmed at query time.
 const arabicText = {
   type: 'text',
   analyzer: 'arabic_normalized',
   fields: {
-    // ignore_above: long fields like content exceed Lucene's keyword term
-    // limit; over-limit values skip the keyword index (no error) while short
-    // titles/names stay exact-matchable for the exact-boost clause.
     exact: { type: 'keyword', ignore_above: 256 },
     stemmed: { type: 'text', analyzer: 'arabic_stemmed' },
   },

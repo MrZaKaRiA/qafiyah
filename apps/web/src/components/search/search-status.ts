@@ -14,7 +14,6 @@ export type FetchStatus =
     }
   | { readonly kind: 'error' };
 
-// One status for the whole search, derived from the per-section statuses.
 export type SearchStatus =
   | { readonly kind: 'idle' }
   | { readonly kind: 'loading' }
@@ -45,10 +44,6 @@ type ActiveSection = {
   readonly total: number;
 };
 
-// Collapse the active sections into a single status so the search shows one
-// loader, one error, and one no-results — never a copy per section. A section
-// that fails is dropped; its surviving sibling's results still show. The
-// unified error only wins when every active section failed.
 export function deriveSearchStatus(sections: readonly ActiveSection[]): SearchStatus {
   const active = sections.filter((section) => section.status.kind !== 'idle');
   if (active.length === 0) return { kind: 'idle' };

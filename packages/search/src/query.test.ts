@@ -14,13 +14,13 @@ describe('buildPoemSearchBody', () => {
       rhymeSlugs: [],
       collectionSlugs: [],
     });
-    expect(body.query.bool.filter).toEqual(
+    expect(body.query?.bool?.filter).toEqual(
       expect.arrayContaining([
         { terms: { eraSlug: ['abbasid'] } },
         { terms: { meterSlug: ['tawil'] } },
       ])
     );
-    expect(JSON.stringify(body.query.bool.filter)).not.toContain('"match"');
+    expect(JSON.stringify(body.query?.bool?.filter)).not.toContain('"match"');
   });
   it('uses match_phrase for exact matchType', () => {
     const body = buildPoemSearchBody({
@@ -34,7 +34,7 @@ describe('buildPoemSearchBody', () => {
       rhymeSlugs: [],
       collectionSlugs: [],
     });
-    expect(JSON.stringify(body.query.bool.must)).toContain('match_phrase');
+    expect(JSON.stringify(body.query?.bool?.must)).toContain('match_phrase');
   });
   it('boosts exact > normalized > stemmed and highlights content', () => {
     const body = buildPoemSearchBody({
@@ -48,10 +48,10 @@ describe('buildPoemSearchBody', () => {
       rhymeSlugs: [],
       collectionSlugs: [],
     });
-    const s = JSON.stringify(body.query.bool.must);
+    const s = JSON.stringify(body.query?.bool?.must);
     expect(s).toContain('title.exact');
     expect(s).toContain('content.stemmed');
-    expect(body.highlight.fields).toHaveProperty('content');
+    expect(body.highlight?.fields).toHaveProperty('content');
   });
   it('uses match_all + id sort when q is empty (browse)', () => {
     const body = buildPoemSearchBody({
@@ -65,7 +65,7 @@ describe('buildPoemSearchBody', () => {
       rhymeSlugs: [],
       collectionSlugs: [],
     });
-    expect(body.query.bool.must).toEqual([{ match_all: {} }]);
+    expect(body.query?.bool?.must).toEqual([{ match_all: {} }]);
     expect(body.sort).toEqual([{ id: 'desc' }]);
     expect(body.from).toBe(5); // (2-1) * SEARCH_POEMS_PER_PAGE (=5)
   });
@@ -81,7 +81,7 @@ describe('buildPoemSearchBody', () => {
       rhymeSlugs: [],
       collectionSlugs: ['muallaqat-uuid'],
     });
-    const filters = (body.query.bool.filter ?? []) as Array<{
+    const filters = (body.query?.bool?.filter ?? []) as Array<{
       terms: Record<string, readonly string[]>;
     }>;
     expect(filters.some((f) => 'collectionSlug' in f.terms)).toBe(true);
@@ -91,6 +91,6 @@ describe('buildPoemSearchBody', () => {
 describe('buildPoetSearchBody', () => {
   it('filters poets by era only', () => {
     const body = buildPoetSearchBody({ q: '', matchType: 'all', page: 1, eraSlugs: ['islamic'] });
-    expect(body.query.bool.filter).toEqual([{ terms: { eraSlug: ['islamic'] } }]);
+    expect(body.query?.bool?.filter).toEqual([{ terms: { eraSlug: ['islamic'] } }]);
   });
 });

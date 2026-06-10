@@ -14,7 +14,7 @@ const poetEntry = slugWithPoemCount(poetSlugSchema);
 
 const listPoetsInput = v.object({
   page: v.optional(pageParam, DEFAULT_PAGE),
-  era: v.optional(eraSlugSchema), // single — a poet has exactly one era
+  era: v.optional(eraSlugSchema),
   q: v.optional(v.pipe(v.string(), v.trim(), v.maxLength(MAX_QUERY_LENGTH))),
 });
 

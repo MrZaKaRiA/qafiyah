@@ -5,9 +5,6 @@ const FNV_PRIME_64 = 1099511628211n;
 const MASK_64 = (1n << 64n) - 1n;
 const WEAK_ETAG_PREFIX = /^W\//;
 
-// 64-bit FNV-1a over UTF-16 code units. Pure, runtime-agnostic (no Bun.*), and
-// wide enough that birthday collisions are negligible across the catalog — a
-// 32-bit hash would risk a stale 304 once a few thousand distinct bodies exist.
 function fnv1a64Hex(input: string): string {
   let hash = FNV_OFFSET_64;
   for (let i = 0; i < input.length; i++) {
@@ -29,7 +26,7 @@ function ifNoneMatchSatisfied(headerValue: string | null, etag: string): boolean
   return headerValue.split(',').some((candidate) => strongOf(candidate) === target);
 }
 
-// @ANCHOR: the sole HTTP-caching boundary for /v1 reads — app.ts pipes every
+// @ANCHOR: the sole HTTP-caching boundary for /v1 reads; app.ts pipes every
 //   matched, successful oRPC response through this. Errors and non-JSON pass
 //   through untouched.
 export async function withReadCaching(

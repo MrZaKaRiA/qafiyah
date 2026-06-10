@@ -1,6 +1,6 @@
 services:
   db:
-    image: postgres:17-alpine
+    image: postgres:18-alpine
     container_name: qafiyah-db
     restart: unless-stopped
     environment:
@@ -8,21 +8,17 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-qafiyah}
       POSTGRES_DB: ${POSTGRES_DB:-qafiyah}
     ports:
-      # Loopback only: Cloudflare Tunnel reaches services via 127.0.0.1; nothing
-      # answers on the public interface. Local dev connects to 127.0.0.1:5433.
       - "127.0.0.1:5433:5432"
     volumes:
-      - db_data:/var/lib/postgresql/data
-      # First-boot auto-seed: on a fresh volume, Postgres runs db-init.sh which
-      # restores the newest dump from /dumps. Skipped when the volume has data.
+      # @NOTE: PG18+ stores data in a major-versioned subdir, so the volume must
+      # mount at /var/lib/postgresql (not .../data) or the image refuses to boot.
+      - db_data:/var/lib/postgresql
       - ./dumps:/dumps:ro
       - ./scripts/db-init.sh:/docker-entrypoint-initdb.d/10-restore.sh:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -h localhost -U ${POSTGRES_USER:-qafiyah} -d ${POSTGRES_DB:-qafiyah}"]
       interval: 10s
       timeout: 5s
-      # Generous start_period covers the first-boot dump restore (minutes) so
-      # dependents waiting on `condition: service_healthy` don't time out.
       retries: 60
       start_period: 300s
 
@@ -38,8 +34,6 @@ services:
       elasticsearch:
         condition: service_healthy
     environment:
-      # Internal network: service name `db`, internal port 5432. Credentials are
-      # composed from the same vars the db service uses.
       DATABASE_URL: postgresql://${POSTGRES_USER:-qafiyah}:${POSTGRES_PASSWORD:-qafiyah}@db:5432/${POSTGRES_DB:-qafiyah}
       ELASTICSEARCH_URL: http://elasticsearch:9200
       ENVIRONMENT: ${ENVIRONMENT:-production}
@@ -59,18 +53,15 @@ services:
       api:
         condition: service_healthy
     environment:
-      # SSR pages call the api service over the internal compose network.
       INTERNAL_API_URL: http://api:8787
     ports:
-      # Host loopback :80 -> container :8080 (non-root nginx).
       - "127.0.0.1:80:8080"
 
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.17.0
+    image: docker.elastic.co/elasticsearch/elasticsearch:9.4.2
     container_name: qafiyah-es
     restart: unless-stopped
     environment:
-      # Single-node, internal-only: security/TLS off (loopback + CF Tunnel front).
       discovery.type: single-node
       xpack.security.enabled: "false"
       bootstrap.memory_lock: "true"
@@ -79,7 +70,6 @@ services:
     ulimits:
       memlock: { soft: -1, hard: -1 }
     ports:
-      # Loopback only, like every other service (Cloudflare Tunnel fronts).
       - "127.0.0.1:9200:9200"
     volumes:
       - es_data:/usr/share/elasticsearch/data
@@ -109,10 +99,8 @@ services:
       DATABASE_URL: postgresql://${POSTGRES_USER:-qafiyah}:${POSTGRES_PASSWORD:-qafiyah}@db:5432/${POSTGRES_DB:-qafiyah}
       ELASTICSEARCH_URL: http://elasticsearch:9200
       WORKER_PORT: "8088"
-      # Empty by default in dev; set in the prod .env so /reconcile is authenticated.
       RECONCILE_TOKEN: ${RECONCILE_TOKEN:-}
     ports:
-      # Loopback only; a Cloudflare Tunnel hostname fronts /reconcile + /healthz.
       - "127.0.0.1:8088:8088"
 
 volumes:

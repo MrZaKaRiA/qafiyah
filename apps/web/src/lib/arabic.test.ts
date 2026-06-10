@@ -25,9 +25,6 @@ describe('toArabicDigits', () => {
   });
 
   it('falls back to original digit when not in ARABIC_DIGITS_MAP (edge case)', () => {
-    // All 0-9 are in the map, so the ?? d fallback only fires for unexpected chars
-    // The regex [0-9] matches only ASCII digits, which are all in the map
-    // This test ensures the ?? branch is reachable by testing the full digit set
     expect(toArabicDigits('0123456789').length).toBe(10);
   });
 

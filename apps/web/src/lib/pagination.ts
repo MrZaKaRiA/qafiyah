@@ -15,11 +15,6 @@ export type PaginationView = {
   readonly headerTip: string;
 };
 
-/**
- * The pagination values every list page derives identically: prev/next state,
- * the prev/next URLs (built by the caller's `makeUrl`, since each route shapes
- * its own query string), and the Arabic-digit "page N of M" header tip.
- */
 export function derivePagination(
   pagination: Pagination,
   makeUrl: (page: number) => string

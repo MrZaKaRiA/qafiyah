@@ -1,8 +1,3 @@
-/**
- * Test utilities for Hono API testing
- * Provides helpers for creating test contexts and mocking database
- */
-
 import type { DbClient } from '@qafiyah/db';
 import type { SearchClient } from '@qafiyah/search';
 import { Hono } from 'hono';
@@ -11,9 +6,6 @@ import * as v from 'valibot';
 import { vi } from 'vitest';
 import type { AppContext, Bindings } from '@/types';
 
-/**
- * Creates a chainable query builder mock that handles Drizzle's query patterns
- */
 function createMockDrizzleQueryBuilder(mockData: readonly unknown[] = []) {
   const limitMock = vi.fn();
   limitMock.mockReturnValue({
@@ -35,17 +27,10 @@ function createMockDrizzleQueryBuilder(mockData: readonly unknown[] = []) {
   return builder;
 }
 
-// test-only: tag a partial shape as DbClient for tests that only exercise a
-// subset of the interface. Local on purpose: exporting from @qafiyah/db would
-// force vi.mock factories to resolve eagerly (the package is mocked here),
-// triggering temporal-dead-zone errors on the per-test top-level vi.fn() vars.
 function castPartialAsDbClient<T extends object>(partial: T): DbClient {
   return partial as unknown as DbClient;
 }
 
-/**
- * Creates a mock database instance
- */
 export function createMockDb(defaultData: readonly unknown[] = []): DbClient {
   const defaultBuilder = createMockDrizzleQueryBuilder(defaultData);
 
@@ -59,16 +44,10 @@ export function createMockDb(defaultData: readonly unknown[] = []): DbClient {
   });
 }
 
-/**
- * Test client type with $get helper
- */
 type TestClientWithGet = {
   readonly $get: (path: string, init?: RequestInit) => Promise<Response>;
 };
 
-/**
- * Creates a test middleware that injects the database and search client into context
- */
 function createTestContextMiddleware(db: DbClient, es: SearchClient) {
   return createMiddleware<AppContext>(async (c, next) => {
     c.set('db', db);
@@ -77,9 +56,6 @@ function createTestContextMiddleware(db: DbClient, es: SearchClient) {
   });
 }
 
-/**
- * Creates a test client for a Hono app with mocked database and bindings
- */
 export function createTestClient<T extends Hono<AppContext>>(
   app: T,
   options?: {
@@ -114,10 +90,6 @@ export function createTestClient<T extends Hono<AppContext>>(
   };
 }
 
-/**
- * Parses a JSON response body against a Valibot schema and returns the typed result.
- * Replaces ad-hoc `(await res.json()) as MyShape` casts in tests.
- */
 export async function parseJson<TSchema extends v.GenericSchema>(
   res: Response,
   schema: TSchema

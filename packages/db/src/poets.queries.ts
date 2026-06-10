@@ -27,17 +27,17 @@ export type ListPoetsError = { readonly kind: 'sql_error'; readonly message: str
 // and tatweel (U+0640), then fold alef forms→ا, ى→ي, ة→ه.
 // q is matched literally (ILIKE metachars escaped in poetNameMatches).
 const HARAKAT_RE = '[ً-ْٰـ]';
-const FOLD_FROM = 'أإآٱىة'; // أ إ آ ٱ ى ة
-const FOLD_TO = 'اااايه'; //  ا ا ا ا ي ه
+const FOLD_FROM = 'أإآٱىة';
+const FOLD_TO = 'اااايه';
 
 function foldArabic(expr: SQL): SQL {
   return sql`translate(regexp_replace(${expr}, ${HARAKAT_RE}, '', 'g'), ${FOLD_FROM}, ${FOLD_TO})`;
 }
 
 function poetNameMatches(q: string): SQL {
-  // Treat q as a literal substring: escape ILIKE metacharacters so %/_ from a
-  // direct API caller can't act as wildcards. (Per search.ts, server-side input
-  // is intentionally not Arabic-sanitized, so the DB must not assume it.)
+  // @WARN: escape ILIKE metacharacters so %/_ from a direct API caller can't act as
+  // wildcards. Server-side input is intentionally not Arabic-sanitized (see search.ts),
+  // so the DB must not assume it.
   const literal = q.replace(/[\\%_]/g, (char) => `\\${char}`);
   return sql`${foldArabic(sql`${poetStats.name}`)} ILIKE '%' || ${foldArabic(sql`${literal}`)} || '%' ESCAPE '\\'`;
 }

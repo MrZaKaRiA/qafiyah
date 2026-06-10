@@ -1,18 +1,21 @@
+import type { estypes } from '@elastic/elasticsearch';
 import type { MatchType } from '@qafiyah/constants';
 import { SEARCH_POEMS_PER_PAGE, SEARCH_POETS_PER_PAGE } from '@qafiyah/constants';
 
 type Filterable = Record<string, readonly string[]>;
 
-function termFilters(map: Filterable): Array<{ terms: Record<string, readonly string[]> }> {
+function termFilters(map: Filterable): estypes.QueryDslQueryContainer[] {
   return Object.entries(map)
     .filter(([, values]) => values.length > 0)
-    .map(([field, values]) => ({ terms: { [field]: values } }));
+    .map(([field, values]) => ({ terms: { [field]: [...values] } }));
 }
 
-// Boosted text across exact (keyword) > normalized (text) > stemmed.
-// matchType: 'exact' → phrase; 'all' → AND; 'any' → OR.
-function textClauses(q: string, fields: readonly string[], matchType: MatchType) {
-  const should: unknown[] = [];
+function textClauses(
+  q: string,
+  fields: readonly string[],
+  matchType: MatchType
+): estypes.QueryDslQueryContainer {
+  const should: estypes.QueryDslQueryContainer[] = [];
   for (const field of fields) {
     if (matchType === 'exact') {
       should.push({ match_phrase: { [field]: { query: q, boost: 3 } } });
@@ -37,7 +40,7 @@ export function buildPoemSearchBody(params: {
   readonly themeSlugs: readonly string[];
   readonly rhymeSlugs: readonly string[];
   readonly collectionSlugs: readonly string[];
-}) {
+}): estypes.SearchRequest {
   const hasText = params.q.length > 0;
   const filter = termFilters({
     poetSlug: params.poetSlugs,
@@ -47,7 +50,7 @@ export function buildPoemSearchBody(params: {
     rhymeSlug: params.rhymeSlugs,
     collectionSlug: params.collectionSlugs,
   });
-  const must = hasText
+  const must: estypes.QueryDslQueryContainer[] = hasText
     ? [textClauses(params.q, ['title', 'content', 'poetName'], params.matchType)]
     : [{ match_all: {} }];
   return {
@@ -55,7 +58,7 @@ export function buildPoemSearchBody(params: {
     size: SEARCH_POEMS_PER_PAGE,
     track_total_hits: true,
     query: { bool: { must, filter } },
-    ...(hasText ? {} : { sort: [{ id: 'desc' }] as const }),
+    ...(hasText ? {} : { sort: [{ id: 'desc' }] }),
     highlight: {
       pre_tags: ['<mark>'],
       post_tags: ['</mark>'],
@@ -71,16 +74,18 @@ export function buildPoetSearchBody(params: {
   readonly matchType: MatchType;
   readonly page: number;
   readonly eraSlugs: readonly string[];
-}) {
+}): estypes.SearchRequest {
   const hasText = params.q.length > 0;
   const filter = termFilters({ eraSlug: params.eraSlugs });
-  const must = hasText ? [textClauses(params.q, ['name'], params.matchType)] : [{ match_all: {} }];
+  const must: estypes.QueryDslQueryContainer[] = hasText
+    ? [textClauses(params.q, ['name'], params.matchType)]
+    : [{ match_all: {} }];
   return {
     from: (params.page - 1) * SEARCH_POETS_PER_PAGE,
     size: SEARCH_POETS_PER_PAGE,
     track_total_hits: true,
     query: { bool: { must, filter } },
-    ...(hasText ? {} : { sort: [{ id: 'desc' }] as const }),
+    ...(hasText ? {} : { sort: [{ id: 'desc' }] }),
     highlight: {
       pre_tags: ['<mark>'],
       post_tags: ['</mark>'],

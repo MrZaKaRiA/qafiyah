@@ -77,7 +77,6 @@ export async function bulkIndex(
   }
 }
 
-// Atomically point an alias at a new index (removing it from any prior version).
 export async function swapAlias(
   client: SearchClient,
   alias: string,
@@ -104,7 +103,7 @@ export async function listIndicesForAlias(
     const rows = await client.cat.indices({ index: `${prefix}*`, format: 'json' });
     return ok((rows as Array<{ index?: string }>).map((r) => r.index ?? '').filter(Boolean));
   } catch (_cause) {
-    // cat.indices throws index_not_found when nothing matches — treat as empty.
+    // @NOTE: cat.indices throws index_not_found when nothing matches; treat as empty.
     return ok([]);
   }
 }
@@ -125,14 +124,10 @@ export type ReindexConfig<TDoc extends { readonly slug: string; readonly id?: nu
   readonly alias: string;
   readonly prefix: string;
   readonly body: object;
-  // Returns the next batch keyed by ascending cursor; return [] when exhausted.
   readonly fetchBatch: (cursor: number) => Promise<readonly TDoc[]>;
-  // Advance the cursor from the last doc of a batch (default: last.id).
   readonly cursorOf?: (doc: TDoc) => number;
 };
 
-// Build a fresh versioned index, bulk-load it, then atomically point the alias at
-// it and drop the previous versions — zero-downtime reindex.
 export async function reindexFromSource<
   TDoc extends { readonly slug: string; readonly id?: number },
 >(
@@ -164,11 +159,7 @@ export async function reindexFromSource<
 
   for (const name of existing.value) {
     if (name !== target) {
-      try {
-        await client.indices.delete({ index: name, ignore_unavailable: true });
-      } catch {
-        // best-effort: the alias already points at the new index
-      }
+      await client.indices.delete({ index: name, ignore_unavailable: true }).catch(() => undefined);
     }
   }
   return ok({ index: target, count: total });
@@ -176,14 +167,10 @@ export async function reindexFromSource<
 
 export type ReconcileConfig<TDoc extends { readonly slug: string }> = {
   readonly alias: string;
-  // (slug → hash) for everything currently in the source of truth (Postgres).
   readonly sourceKeys: () => Promise<ReadonlyMap<string, string>>;
-  // Fetch full docs for the slugs that need upserting.
   readonly fetchDocs: (slugs: readonly string[]) => Promise<readonly TDoc[]>;
 };
 
-// Scroll the whole alias (slug → hash), diff against the source, then upsert
-// changed/missing docs and delete orphans. Returns counts for observability.
 export async function reconcileFromSource<TDoc extends { readonly slug: string }>(
   client: SearchClient,
   config: ReconcileConfig<TDoc>

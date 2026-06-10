@@ -66,6 +66,29 @@ describe('app /v1 read caching + HEAD', () => {
     expect(res.headers.get('ETag')).toBeNull();
   });
 
+  it('honors X-Forwarded-Proto so the spec server URL is https behind a TLS-terminating proxy', async () => {
+    type SpecDoc = { servers: { url: string }[] };
+    const { default: app } = await import('./app');
+    const spec = (await (
+      await app.fetch(
+        new Request('http://api.qafiyah.com/v1/openapi.json', {
+          headers: { 'x-forwarded-proto': 'https' },
+        }),
+        TEST_ENV
+      )
+    ).json()) as SpecDoc;
+    expect(spec.servers[0]?.url).toBe('https://api.qafiyah.com/v1');
+  });
+
+  it('falls back to the connection scheme for the spec server when X-Forwarded-Proto is absent', async () => {
+    type SpecDoc = { servers: { url: string }[] };
+    const { default: app } = await import('./app');
+    const spec = (await (
+      await app.fetch(new Request('http://localhost:8787/v1/openapi.json'), TEST_ENV)
+    ).json()) as SpecDoc;
+    expect(spec.servers[0]?.url).toBe('http://localhost:8787/v1');
+  });
+
   it('documents error responses with the RFC 9457 Problem body shape', async () => {
     type SpecDoc = {
       paths: Record<

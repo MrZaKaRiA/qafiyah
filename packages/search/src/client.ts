@@ -29,7 +29,7 @@ export function createSearchClient(
       message: `Unsupported protocol: ${parsed.protocol}`,
     });
   }
-  // @WARN: Connection: HttpConnection is REQUIRED under the Bun runtime — the
+  // @WARN: Connection: HttpConnection is REQUIRED under the Bun runtime; the
   // client's default undici-based transport throws "response.headers undefined"
   // on every request under Bun. The Node-http connection works under both Bun
   // (api + worker runtimes) and Node (vitest). Do not remove.

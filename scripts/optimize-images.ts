@@ -184,7 +184,6 @@ function toPosixRelative(fromRoot: string, absPath: string): string {
   return path.relative(fromRoot, absPath).split(path.sep).join('/');
 }
 
-// Bun.Glob scans all subdirectories; SKIP_DIR_NAMES prunes unwanted trees post-scan.
 async function* walkFiles(scanRoot: string): AsyncGenerator<string> {
   const glob = new Bun.Glob('**/*');
   for await (const relPath of glob.scan({ cwd: scanRoot, onlyFiles: true })) {
@@ -351,7 +350,6 @@ async function processOne(absPath: string, cfg: CliConfig): Promise<FileResult> 
   }
 
   if (cfg.replace) {
-    // best-effort, match `rm -f` semantics: discard failures
     await ResultAsync.fromPromise(Bun.file(absPath).delete(), () => undefined);
   }
   return { ok: true, src: absPath, out: outPath, bytesIn, bytesOut: encodeResult.value.bytesOut };

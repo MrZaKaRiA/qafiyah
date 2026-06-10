@@ -57,7 +57,6 @@ export function SearchContainer() {
 
   return (
     <section className="items mx-auto flex h-full w-full max-w-2xl flex-1 flex-col justify-start pb-24">
-      {/*  */}
       <div className="h-[25svh] w-full"></div>
 
       <div className="flex w-full flex-col gap-10 md:gap-16" dir="rtl">

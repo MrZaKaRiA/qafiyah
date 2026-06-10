@@ -19,7 +19,6 @@ import {
 import { DEFAULT_PAGE, inputValidationErrorMap, internalServerErrorMap } from './constants';
 import { namedSlugRef, optionalSlugs, pageParam, pagination } from './schemas';
 
-// Live-typing sanitizer kept for the web input (UX); not applied server-side.
 export function sanitizeArabicInput(raw: string): string {
   return raw.replace(NON_ARABIC_AND_SPACE_REGEX, '').replace(WHITESPACE_RUN_REGEX, ' ');
 }

@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { docHash, toPoemDoc, toPoetDoc } from './documents';
 
-// Arabic tashkeel (diacritics) range — moved to top level per biome/performance rule.
 const TASHKEEL_RE = /[ً-ْ]/;
 
 const poemSource = {

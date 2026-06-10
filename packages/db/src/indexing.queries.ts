@@ -76,7 +76,6 @@ const POEM_SELECT = sql`
   LEFT JOIN public.collections c ON p.collection_id = c.id
 `;
 
-// Keyset-paged batch for full reindex + reconcile hashing.
 export async function streamPoemBatch(
   db: DbClient,
   afterId: number,
@@ -111,7 +110,6 @@ export async function streamPoetBatch(
   return ok(rows.value.map(toPoetSource));
 }
 
-// Fetch full source rows for a specific set of slugs (reconcile upserts).
 export async function getPoemsBySlugs(
   db: DbClient,
   slugs: readonly string[]

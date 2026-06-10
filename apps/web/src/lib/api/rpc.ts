@@ -15,10 +15,8 @@ type ApiOutputs = InferContractRouterOutputs<AppContract>;
 
 type DataField<T> = T extends { data: infer D } ? D : never;
 
-// Single resource
 export type Poem = DataField<ApiOutputs['poems']['get']>;
 
-// Search
 type SearchResponse = ApiOutputs['search']['search'];
 type PoemsSection = NonNullable<SearchResponse['poems']>;
 type PoetsSection = NonNullable<SearchResponse['poets']>;

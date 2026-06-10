@@ -6,7 +6,7 @@ import { parseBindings } from '@/env';
 import { makeProblem, sendProblem } from '@/lib/problem';
 import type { AppContext } from '@/types';
 
-// @NOTE: cached at module scope like the db client — the ES URL is constant per
+// @NOTE: cached at module scope like the db client; the ES URL is constant per
 // process, so one client is reused across requests. Defaults to the local dev
 // node when ELASTICSEARCH_URL is unset (prod sets it via compose), mirroring how
 // the web resolves INTERNAL_API_URL.

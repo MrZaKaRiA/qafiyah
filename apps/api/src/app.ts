@@ -52,6 +52,18 @@ for (const ns of routerNamespaces) {
 }
 app.use(`${API_V1_PREFIX}/*`, esMiddleware);
 
+// @NOTE: behind Cloudflare Tunnel the server only sees plaintext http, so request.url is http
+// in prod. X-Forwarded-Proto carries the real client scheme; the host stays correct in request.url.
+function resolveForwardedOrigin(request: {
+  url: URL;
+  headers: Record<string, string | string[] | undefined>;
+}): string {
+  const rawProto = request.headers['x-forwarded-proto'];
+  const forwarded = Array.isArray(rawProto) ? rawProto[0] : rawProto;
+  const proto = forwarded?.split(',')[0]?.trim() || request.url.protocol.slice(0, -1);
+  return `${proto}://${request.url.host}`;
+}
+
 const orpcHandler = new OpenAPIHandler(router, {
   plugins: [
     new OpenAPIReferencePlugin({
@@ -66,9 +78,7 @@ const orpcHandler = new OpenAPIHandler(router, {
           contact: { name: SITE_NAME_EN, url: GITHUB_REPO_URL },
           license: { name: LICENSE_NAME },
         },
-        servers: [{ url: `${request.url.origin}${API_V1_PREFIX}` }],
-        // Document the real RFC 9457 error body (lib/problem.ts) instead of
-        // oRPC's native error envelope. Applies to every error response.
+        servers: [{ url: `${resolveForwardedOrigin(request)}${API_V1_PREFIX}` }],
         customErrorResponseBodySchema: PROBLEM_DETAIL_SCHEMA,
       }),
     }),
@@ -77,8 +87,6 @@ const orpcHandler = new OpenAPIHandler(router, {
 
 app.use(`${API_V1_PREFIX}/*`, async (c, next) => {
   if (ORPC_BYPASS_PATHS.has(c.req.path)) return next();
-  // HEAD parity: run the GET handler, then strip the body *after* the caching
-  // wrapper — so a HEAD still carries ETag/Cache-Control and can answer 304.
   const isHead = c.req.method === 'HEAD';
   const forward = isHead
     ? new Request(c.req.raw.url, { method: 'GET', headers: c.req.raw.headers })

@@ -5,7 +5,6 @@ import { publicProcedure } from './base';
 import { listEnvelope } from './envelope';
 
 export const list = publicProcedure.poets.list.handler(async ({ context, input, errors }) => {
-  // The contract already trims q; collapse an empty string to undefined.
   const q = input.q || undefined;
   const queryResult = await poetsQueries.listPoets(context.db, input.page, {
     ...(input.era !== undefined && { eraSlug: input.era }),
@@ -13,9 +12,6 @@ export const list = publicProcedure.poets.list.handler(async ({ context, input, 
   });
   if (queryResult.isErr()) throw errors.INTERNAL_SERVER_ERROR();
   const result = queryResult.value;
-  // A page past the last page is an empty page, not a missing resource — return
-  // 200 with empty data + pagination, consistent with /poems. (404 is reserved
-  // for a missing named resource, e.g. /poets/{slug}.)
   context.log?.({
     result_count: result.total,
     page: input.page,

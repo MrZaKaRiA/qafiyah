@@ -72,7 +72,6 @@ export function SelectMulti({
     return formatArabicCount({ count: selectedValues.length, nounForms: placeholderNounForms });
   };
 
-  // Click outside to close
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
@@ -80,14 +79,12 @@ export function SelectMulti({
       }
     };
 
-    // Use mousedown instead of click for better responsiveness
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
 
-  // Keyboard navigation
   useEffect(() => {
     if (!isOpen) return;
 

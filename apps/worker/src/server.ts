@@ -41,7 +41,6 @@ async function boot(env: WorkerEnv): Promise<void> {
   }
   const es = esResult.value;
 
-  // Initial population: reindex only if the alias is missing/empty.
   const health = await indexHealth(es, POEMS_INDEX_ALIAS);
   if (health.isErr() || health.value.count === 0) {
     if (await runReindex(env)) state.lastReindexAt = new Date().toISOString();

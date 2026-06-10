@@ -38,8 +38,6 @@ describe('enrichContext', () => {
     await app.fetch(new Request('http://localhost/test'));
 
     const projected = toLogEvent(handle);
-    // Without status_code/duration_ms set, projection returns null; mutate
-    // those too to inspect the merged state.
     recordResponse(handle, 200, 1);
     const final = toLogEvent(handle);
     expect(final).toMatchObject({ poet_id: 'p1', result_count: 12 });

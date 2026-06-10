@@ -1,6 +1,5 @@
 import { VERSE_DESCRIPTION_OPTIMAL_LENGTH, VERSE_SEPARATOR_DISPLAY } from '@/constants';
 
-/** Builds a short plain-text snippet from verse halves for meta descriptions. */
 export function flattenVerses(
   verses: readonly (readonly [string, string])[] | null | undefined
 ): string {

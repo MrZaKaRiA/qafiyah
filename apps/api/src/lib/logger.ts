@@ -68,7 +68,6 @@ type LogEvent = LogEventBase &
 
 type Mutable<T> = { -readonly [K in keyof T]: T[K] };
 
-// Internal mutable builder, only constructed/mutated via the helpers in this module.
 type LogEventBuilder = Mutable<LogEventBase> &
   Mutable<DomainFields> & {
     status_code?: number;
@@ -78,9 +77,6 @@ type LogEventBuilder = Mutable<LogEventBase> &
 
 declare const LogHandleBrand: unique symbol;
 
-// Opaque handle used as the context-stored log marker. The builder shape is
-// internal; consumers (middleware, error handler, procedures) interact via
-// the helpers in this module.
 export type LogHandle = { readonly [LogHandleBrand]: true };
 
 function castHandleToBuilder(handle: LogHandle): LogEventBuilder {

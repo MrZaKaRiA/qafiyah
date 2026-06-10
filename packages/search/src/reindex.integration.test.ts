@@ -5,7 +5,6 @@ import { toPoemDoc } from './documents';
 import { POEMS_INDEX_BODY } from './indices';
 import { ES_TEST_URL, RUN_ES_INTEGRATION } from './test-utils';
 
-// Use a test-only prefix/alias to avoid colliding with search.integration.test.ts.
 const TEST_PREFIX = 'rx_poems_v';
 const TEST_ALIAS = 'rx_poems';
 

@@ -14,9 +14,6 @@ type SectionProps = {
   readonly loadMoreRef: Ref<HTMLDivElement>;
 };
 
-// Renders one result list. Loading, error, and no-results are handled once, for
-// the whole search, by the container — so an empty section renders nothing and
-// never doubles up a spinner or message with its sibling.
 export function SearchSection({
   title,
   items,

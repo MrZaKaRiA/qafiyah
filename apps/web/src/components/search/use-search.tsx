@@ -144,7 +144,6 @@ export function useSearch() {
   const hasInputText = inputValue.trim().length > 0;
   const canSearch = hasCommittedQuery || hasFilters;
 
-  // — poems section query —
   const poemsInfiniteQuery = useInfiniteQuery(
     orpc.search.search.infiniteOptions({
       input: (pageParam: number) => ({
@@ -171,7 +170,6 @@ export function useSearch() {
     })
   );
 
-  // — poets section query —
   const poetsInfiniteQuery = useInfiniteQuery(
     orpc.search.search.infiniteOptions({
       input: (pageParam: number) => ({
@@ -198,7 +196,6 @@ export function useSearch() {
     })
   );
 
-  // — flatten sections —
   const poemItems: readonly PoemSearchResult[] =
     poemsInfiniteQuery.data?.pages.flatMap((p) => p.poems?.data ?? []) ?? [];
   const poemsTotal = poemsInfiniteQuery.data?.pages[0]?.poems?.pagination.totalItems ?? 0;
@@ -207,7 +204,6 @@ export function useSearch() {
     poetsInfiniteQuery.data?.pages.flatMap((p) => p.poets?.data ?? []) ?? [];
   const poetsTotal = poetsInfiniteQuery.data?.pages[0]?.poets?.pagination.totalItems ?? 0;
 
-  // — per-section status, then one unified status for the whole search —
   const poemsStatus = deriveSectionStatus({
     canSearch: canSearch && wantPoems,
     isError: poemsInfiniteQuery.isError,
@@ -228,7 +224,6 @@ export function useSearch() {
     { status: poetsStatus, total: poetsTotal },
   ]);
 
-  // — per-section infinite scroll —
   const { loadMoreRef: poemsLoadMoreRef } = useInfiniteScroll(
     poemsInfiniteQuery.fetchNextPage,
     poemsInfiniteQuery.hasNextPage,
@@ -241,7 +236,6 @@ export function useSearch() {
     poetsInfiniteQuery.isFetchingNextPage
   );
 
-  // — filter setters —
   const handleErasChange = createCsvFilterSetter(setEraIds);
   const handleMetersChange = createCsvFilterSetter(setMeterIds);
   const handleRhymesChange = createCsvFilterSetter(setRhymeIds);

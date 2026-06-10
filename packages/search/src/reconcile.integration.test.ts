@@ -5,7 +5,6 @@ import { type PoetDoc, toPoetDoc } from './documents';
 import { POETS_INDEX_BODY } from './indices';
 import { ES_TEST_URL, RUN_ES_INTEGRATION } from './test-utils';
 
-// Use a test-only prefix/alias to avoid colliding with search.integration.test.ts.
 const TEST_INDEX = 'rc_poets_v1';
 const TEST_ALIAS = 'rc_poets';
 
@@ -18,13 +17,11 @@ describe.skipIf(!RUN_ES_INTEGRATION)('reconcileFromSource (integration)', () => 
 
   beforeAll(async () => {
     client = createSearchClient(ES_TEST_URL)._unsafeUnwrap();
-    // ES 8.x blocks wildcard deletes by default — toggle off transiently for cleanup.
     await client.cluster.putSettings({ transient: { 'action.destructive_requires_name': false } });
     await client.indices.delete({ index: 'rc_poets*', ignore_unavailable: true });
     await client.cluster.putSettings({ transient: { 'action.destructive_requires_name': null } });
 
     (await ensureIndex(client, TEST_INDEX, POETS_INDEX_BODY))._unsafeUnwrap();
-    // ES starts with: pt-1 (current), pt-2 (STALE — old name), pt-9 (ORPHAN).
     (
       await bulkIndex(client, TEST_INDEX, [
         poet(1, 'aaa'),
@@ -43,7 +40,6 @@ describe.skipIf(!RUN_ES_INTEGRATION)('reconcileFromSource (integration)', () => 
   });
 
   it('upserts changed+missing and deletes orphans', async () => {
-    // Source of truth: pt-1 (same), pt-2 (corrected), pt-3 (new). pt-9 is gone.
     const source = [poet(1, 'aaa'), poet(2, 'bbb'), poet(3, 'ccc')];
     const byHash = new Map(source.map((d) => [d.slug, d.hash]));
     const result = await reconcileFromSource(client, {

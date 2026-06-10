@@ -1,7 +1,3 @@
-/**
- * Tests for favicon middleware
- */
-
 import { Hono } from 'hono';
 import { describe, expect, it } from 'vitest';
 import { FAVICON_EMOJI } from '@/constants';

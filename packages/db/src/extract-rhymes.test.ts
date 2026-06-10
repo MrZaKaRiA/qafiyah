@@ -65,7 +65,6 @@ describe('extractRhymeLetter', () => {
   });
 
   it('ignores ajuz lines whose final char is not a rhyme letter', () => {
-    // line[1] ends in '!', line[3] ends in 'م', line[5] ends in 'م'
     expect(extractRhymeLetter('a*hello!*c*دم*e*ولم')).toBe('م');
   });
 

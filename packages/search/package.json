@@ -14,7 +14,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@elastic/elasticsearch": "^8.17.0",
+    "@elastic/elasticsearch": "^9.4.2",
     "@qafiyah/constants": "workspace:*",
     "neverthrow": "^8.2.0"
   },

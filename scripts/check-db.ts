@@ -1,5 +1,4 @@
 #!/usr/bin/env bun
-// Warns (non-blocking) when the qafiyah Postgres container isn't reachable.
 import net from 'node:net';
 
 const HOST = '127.0.0.1';

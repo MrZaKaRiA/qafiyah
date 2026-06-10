@@ -1,9 +1,3 @@
-/**
- * Tests for the /poems/random plain-Hono route.
- * All other poems endpoints (slugs, slug/:slug) are exposed via oRPC procedures
- * in apps/api/src/procedures/poems.procedures.ts.
- */
-
 import { HTTPException } from 'hono/http-exception';
 import { describe, expect, it, vi } from 'vitest';
 import { createMockDb, createTestClient } from '@/test-utils';

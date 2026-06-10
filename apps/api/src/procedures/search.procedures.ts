@@ -15,7 +15,6 @@ import { buildPagination } from './envelope';
 type PoemResult = v.InferOutput<typeof poemSearchResult>;
 type PoetResult = v.InferOutput<typeof poetSearchResult>;
 
-// ES documents carry trusted slugs from the indexed DB records; brand casts are safe here.
 const toPoemResult = (h: PoemHit): PoemResult => ({
   type: 'poem',
   title: h.title,
@@ -80,7 +79,6 @@ export const search = publicProcedure.search.search.handler(async ({ context, in
     throw errors.INTERNAL_SERVER_ERROR();
   }
 
-  // At this point both results are either null (not requested) or Ok — isErr() guards above exit early.
   const poemsPage = poemsRes?.isOk() ? poemsRes.value : null;
   const poetsPage = poetsRes?.isOk() ? poetsRes.value : null;
 

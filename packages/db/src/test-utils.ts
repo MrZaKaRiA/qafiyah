@@ -26,9 +26,6 @@ export function makeChain(data: readonly unknown[]): DrizzleChain {
   return chain;
 }
 
-// test-only: returns a DbClient-shaped object that only implements the subset of
-// the interface actually used by the query under test. Centralizes the cast so
-// individual tests stay free of `as unknown as DbClient`.
 export function castPartialAsDbClient<T extends object>(partial: T): DbClient {
   return partial as unknown as DbClient;
 }
@@ -36,8 +33,6 @@ export function castPartialAsDbClient<T extends object>(partial: T): DbClient {
 // biome-ignore lint/style/noProcessEnv: test-only helper reads env directly to gate integration tests
 const TEST_DATABASE_URL = process.env['TEST_DATABASE_URL'] ?? '';
 
-// Integration test helper — skips the callback when TEST_DATABASE_URL is absent.
-// Usage: await withTestDb(async (db) => { ... });
 export async function withTestDb(fn: (db: DbClient) => Promise<void>): Promise<void> {
   if (TEST_DATABASE_URL === '') return;
   const db = createDb(TEST_DATABASE_URL)._unsafeUnwrap();

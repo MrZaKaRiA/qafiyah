@@ -64,9 +64,6 @@ export function parsePoemContent(content: string): ParsedPoemContent {
 
 export type PoemSlugsError = { readonly kind: 'sql_error'; readonly message: string };
 
-// Paginated so a single sitemap shard never pulls the whole table. ORDER BY slug is
-// deterministic (slug is unique + NOT NULL), so shards partition the set with no gaps
-// or overlap across requests.
 export async function listPoemSlugs(
   db: DbClient,
   page: number,

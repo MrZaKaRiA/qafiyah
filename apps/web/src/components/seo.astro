@@ -19,12 +19,10 @@ export interface Props {
   title?: string | undefined;
   description?: string | undefined;
   keywords?: string | readonly string[] | undefined;
-  /** Path beginning with '/' or absolute URL. */
   canonical?: string | undefined;
   ogType?: OgType | undefined;
   ogTitle?: string | undefined;
   ogDescription?: string | undefined;
-  /** Path beginning with '/' or absolute URL. */
   ogImage?: string | undefined;
   ogImageAlt?: string | undefined;
   twitterCard?: TwitterCard | undefined;
@@ -33,16 +31,12 @@ export interface Props {
   twitterImage?: string | undefined;
   twitterImageAlt?: string | undefined;
   robotsIndex?: boolean | undefined;
-  /** rel="prev" pagination hint (path or absolute URL). */
   prevUrl?: string | undefined;
-  /** rel="next" pagination hint (path or absolute URL). */
   nextUrl?: string | undefined;
-  /** Single object or array of JSON-LD blocks. */
   jsonLd?:
     | Readonly<Record<string, unknown>>
     | readonly Readonly<Record<string, unknown>>[]
     | undefined;
-  /** Extra origins to preconnect to in addition to the API origin. */
   preconnect?: readonly string[] | undefined;
 }
 
@@ -84,9 +78,6 @@ const robotsContent = robotsIndex ? 'index, follow' : 'noindex, nofollow';
 const jsonLdRaw = jsonLd ?? [];
 const jsonLdEntries = Array.isArray(jsonLdRaw) ? jsonLdRaw : [jsonLdRaw];
 
-// API origin is the same on every page — search hydrates on `/`, random-poem
-// button lives in the footer everywhere. Preconnecting saves a roundtrip
-// regardless of which page the user lands on.
 const defaultPreconnect: readonly string[] = [PROD_API_URL];
 const allPreconnect = [...defaultPreconnect, ...preconnect];
 ---

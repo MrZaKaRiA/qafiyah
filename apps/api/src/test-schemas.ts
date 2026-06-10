@@ -1,13 +1,3 @@
-/**
- * Minimal Valibot schemas used to validate response bodies in tests.
- * Replaces ad-hoc `(await res.json()) as ListBody` casts.
- *
- * Shapes are built from `@qafiyah/contracts` so tests stay in lockstep with the
- * wire contract. The local `slug = v.string()` keeps slug validation loose
- * (unbranded) — tests only need to confirm the field is present, not that it
- * matches a brand.
- */
-
 import { namedSlugRef, pagination, slugWithPoemCount } from '@qafiyah/contracts';
 import * as v from 'valibot';
 

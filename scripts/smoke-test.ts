@@ -110,7 +110,7 @@ async function main() {
   const readiness = await waitForServer();
   if (readiness.isErr()) {
     const tail = readiness.error.lastError
-      ? ` last error: ${readiness.error.lastError.kind} — ${readiness.error.lastError.message}.`
+      ? ` last error: ${readiness.error.lastError.kind}, ${readiness.error.lastError.message}.`
       : '';
     console.error(` server never came up (see /tmp/dev-server.log).${tail}`);
     dev.kill();

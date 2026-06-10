@@ -47,7 +47,6 @@ export function SelectSingle({
     [onChange, value]
   );
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
@@ -55,14 +54,12 @@ export function SelectSingle({
       }
     };
 
-    // Use mousedown instead of click for better responsiveness
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
 
-  // Handle keyboard navigation
   useEffect(() => {
     if (!isOpen) return;
 
@@ -92,7 +89,6 @@ export function SelectSingle({
     return () => window.removeEventListener('keydown', handler);
   }, [isOpen, highlightedIndex, options, selectOption]);
 
-  // Reset highlighted index when opening
   useEffect(() => {
     if (isOpen) {
       const selectedIndex = options.findIndex((o) => o.value === value);

@@ -12,17 +12,12 @@ const TEST_ENV: Bindings = {
   ENVIRONMENT: 'test',
 };
 
-// Non-contract routes (raw Hono / plugin) that are not in the oRPC spec paths.
 const ALLOWLIST = new Set(['/poems/random', '/openapi.json', '/docs']);
 
-// Match `/v1/...` paths, stopping at ')' / ']' / whitespace so markdown link
-// syntax `[GET /v1/x](url)` yields '/v1/x' from both the label and the url.
 const V1_PATH_REGEX = /\/v1\/[^)\]\s]*/g;
 const V1_PREFIX_REGEX = /^\/v1/;
 const TRAILING_DOTS_REGEX = /[.]+$/;
 
-// Extract `/v1/...` paths from the rendered llms.txt, stripping markdown link
-// syntax, query strings, and the `/v1` prefix so they line up with spec.paths.
 function llmsContractPaths(body: string): string[] {
   const matches = body.match(V1_PATH_REGEX) ?? [];
   const normalize = (m: string): string =>

@@ -32,7 +32,6 @@ type PostTweetError =
       readonly retryable: true;
     };
 
-// Network/HTTP failures are transient; rate-limit and empty bodies aren't.
 function tagRetryable(error: RandomPoemTransportError): RetryableTransportError {
   const retryable = error.kind === 'network' || error.kind === 'http_error';
   return { ...error, retryable };

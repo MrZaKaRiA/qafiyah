@@ -26,7 +26,6 @@ export type PoetHit = {
 
 export type SearchPage<T> = { readonly hits: readonly T[]; readonly total: number };
 
-// Raw _source shapes from ES — all optional since we cast from unknown.
 type PoemRaw = {
   slug?: string;
   title?: string;
