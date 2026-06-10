@@ -23,9 +23,9 @@ export const REACT_QUERY_RETRY_COUNT = 1;
 
 export const DATABASE_DUMPS_URL = `${GITHUB_REPO_URL}/tree/main/dumps`;
 export const DEVELOPER_SITE_URL = 'https://alwalxed.com';
-export const TWITTER_HANDLE = '@qafiyahiyahdotcom';
-export const TWITTER_ID = '1570116567538475010';
-export const X_HANDLE_URL = 'https://x.com/qafiyahdotcom';
+export const TWITTER_HANDLE = '@qafiyahx';
+export const TWITTER_ID = '2063826482560974848';
+export const X_HANDLE_URL = 'https://x.com/qafiyahx';
 
 const DEV_WEB_URL = `http://localhost:${DEV_WEB_PORT}`;
 
